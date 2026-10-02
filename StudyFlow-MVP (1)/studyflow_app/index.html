@@ -1,1 +1,390 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>StudyFlow</title><link rel="stylesheet" href="styles.css"></head><body><div class="app"><aside class="sidebar"><a class="brand" href="#inicio" aria-label="StudyFlow início"><span class="brandmark">S</span><span>Study<span>Flow</span></span></a><nav aria-label="Principal"><button data-view="inicio" class="nav active">⌂ <span>Início</span></button><button data-view="atividades" class="nav">✓ <span>Atividades</span></button><button data-view="cronograma" class="nav">▦ <span>Meu Cronograma</span></button><button data-view="progresso" class="nav">↗ <span>Progresso</span></button></nav><div class="sidebar-tip"><b>Seu ritmo, seu fluxo.</b><small>Organize hoje. Evolua todos os dias.</small></div></aside><main><header class="topbar"><button id="menuBtn" class="icon-btn" aria-label="Abrir menu">☰</button><div class="mobile-brand">Study<span>Flow</span></div><div class="avatar" title="Ana">A</div></header><section id="view" tabindex="-1"></section></main></div><div id="toast" role="status" aria-live="polite"></div><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow — Organize seus estudos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232563eb'/><path d='M28 30h44v8H28zm0 16h32v8H28zm0 16h44v8H28z' fill='white'/></svg>">
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+</head>
+<body>
+  <main class="auth-shell" id="authShell" aria-live="polite">
+    <section class="auth-card" id="loginView" aria-labelledby="loginTitle">
+      <img class="auth-logo" src="public/Logo_StudyFlow_com_Livros_em_Fluxo.png" alt="StudyFlow — seus estudos em movimento">
+      <div class="auth-copy">
+        <h1 id="loginTitle">Bem-vindo de volta</h1>
+        <p>Seu ritmo, seu fluxo. Organize hoje. Evolua todos os dias.</p>
+      </div>
+      <div class="auth-notice" id="loginNotice" role="status" aria-live="polite"></div>
+      <form class="auth-form" id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="loginEmail">E-mail</label>
+          <input type="email" id="loginEmail" name="email" autocomplete="email" required>
+          <span class="form-error" id="loginEmailError"></span>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Senha</label>
+          <input type="password" id="loginPassword" name="password" autocomplete="current-password" required>
+          <span class="form-error" id="loginPasswordError"></span>
+        </div>
+        <div class="auth-options">
+          <label class="checkbox-label"><input type="checkbox" id="rememberMe"> <span>Lembrar de mim</span></label>
+          <button type="button" class="auth-link" id="forgotPassword">Esqueci minha senha</button>
+        </div>
+        <button class="btn btn--primary btn--wide" type="submit">Entrar</button>
+      </form>
+      <p class="auth-switch">Ainda não tem uma conta? <button type="button" class="auth-link auth-link--strong" id="showSignup">Criar conta</button></p>
+    </section>
+
+    <section class="auth-card" id="signupView" aria-labelledby="signupTitle" hidden>
+      <img class="auth-logo" src="public/Logo_StudyFlow_com_Livros_em_Fluxo.png" alt="StudyFlow — seus estudos em movimento">
+      <div class="auth-copy">
+        <h1 id="signupTitle">Crie sua conta</h1>
+        <p>Comece a organizar seus estudos no seu próprio ritmo.</p>
+      </div>
+      <div class="auth-notice" id="signupNotice" role="status" aria-live="polite"></div>
+      <form class="auth-form" id="signupForm" novalidate>
+        <div class="form-group">
+          <label for="signupName">Nome</label>
+          <input type="text" id="signupName" name="name" autocomplete="name" required>
+          <span class="form-error" id="signupNameError"></span>
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">E-mail</label>
+          <input type="email" id="signupEmail" name="email" autocomplete="email" required>
+          <span class="form-error" id="signupEmailError"></span>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Senha</label>
+          <input type="password" id="signupPassword" name="password" autocomplete="new-password" required>
+          <span class="form-error" id="signupPasswordError"></span>
+        </div>
+        <div class="form-group">
+          <label for="signupConfirm">Confirmar senha</label>
+          <input type="password" id="signupConfirm" name="confirm" autocomplete="new-password" required>
+          <span class="form-error" id="signupConfirmError"></span>
+        </div>
+        <button class="btn btn--primary btn--wide" type="submit">Criar conta</button>
+      </form>
+      <p class="auth-switch">Já possui uma conta? <button type="button" class="auth-link auth-link--strong" id="showLogin">Entrar</button></p>
+    </section>
+  </main>
+
+  <div class="app" id="app" hidden>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+      <div class="sidebar__brand">
+        <div class="brand__logo brand__logo--image">
+          <img src="public/Logo_StudyFlow_com_Livros_em_Fluxo.png" alt="StudyFlow">
+        </div>
+        <div class="brand__text">
+          <span class="brand__name">StudyFlow</span>
+          <span class="brand__tag">Seu fluxo de estudos</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Telas">
+        <button class="nav-item active" data-screen="inicio" aria-current="page">
+          <span class="nav-item__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </span>
+          <span>Início</span>
+        </button>
+        <button class="nav-item" data-screen="atividades">
+          <span class="nav-item__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          <span>Atividades</span>
+        </button>
+        <button class="nav-item" data-screen="cronograma">
+          <span class="nav-item__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          <span>Meu Cronograma</span>
+        </button>
+        <button class="nav-item" data-screen="progresso">
+          <span class="nav-item__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </span>
+          <span>Progresso</span>
+        </button>
+        <button class="nav-item nav-item--logout" id="btnLogout" type="button">
+          <span class="nav-item__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          </span>
+          <span>Sair</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__user">
+          <div class="user__avatar" id="userAvatar" aria-hidden="true"></div>
+          <div class="user__info">
+            <span class="user__name" id="userName"></span>
+            <span class="user__role">Estudante</span>
+          </div>
+        </div>
+        <div class="theme-toggle" role="group" aria-label="Escolher tema">
+          <button type="button" class="theme-toggle__option" data-theme-choice="light" aria-label="Usar tema claro">☀️ Claro</button>
+          <button type="button" class="theme-toggle__option" data-theme-choice="dark" aria-label="Usar tema escuro">🌙 Escuro</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="overlay" id="overlay" hidden></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+      <!-- Top bar (mobile) -->
+      <header class="topbar">
+        <button class="topbar__menu" id="btnOpenSidebar" aria-label="Abrir menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar__brand">
+          <div class="brand__logo brand__logo--small brand__logo--image">
+            <img src="public/Logo_StudyFlow_com_Livros_em_Fluxo.png" alt="StudyFlow">
+          </div>
+          <span>StudyFlow</span>
+        </div>
+      </header>
+
+      <!-- Toast -->
+      <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+      <!-- ============ SCREEN: INÍCIO ============ -->
+      <section class="screen active" id="screen-inicio" role="tabpanel" aria-labelledby="nav-inicio">
+        <div class="screen__inner">
+          <div class="screen__header">
+            <div>
+              <h1 id="nav-inicio">Olá, <span id="greetingName"></span>! <span aria-hidden="true">👋</span></h1>
+              <p class="screen__subtitle">Vamos organizar seus estudos?</p>
+            </div>
+            <button class="btn btn--primary" id="btnNovaAtividadeInicio">
+              <span aria-hidden="true">+</span> Nova atividade
+            </button>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="summary-grid" id="summaryGrid"></div>
+
+          <!-- Weekly progress -->
+          <div class="card weekly-progress" id="weeklyProgressCard"></div>
+
+          <!-- Today + Upcoming -->
+          <div class="two-col">
+            <div class="card">
+              <div class="card__header">
+                <h2>Hoje</h2>
+                <span class="badge badge--soft" id="todayCount">0</span>
+              </div>
+              <div class="card__body" id="todayList"></div>
+            </div>
+            <div class="card">
+              <div class="card__header">
+                <h2>Próximas atividades</h2>
+              </div>
+              <div class="card__body" id="upcomingList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN: ATIVIDADES ============ -->
+      <section class="screen" id="screen-atividades" role="tabpanel" aria-labelledby="nav-atividades">
+        <div class="screen__inner">
+          <div class="screen__header">
+            <div>
+              <h1 id="nav-atividades">Atividades</h1>
+              <p class="screen__subtitle">Gerencie suas tarefas, provas e trabalhos</p>
+            </div>
+            <button class="btn btn--primary" id="btnNovaAtividadeAtiv">
+              <span aria-hidden="true">+</span> Nova atividade
+            </button>
+          </div>
+
+          <div class="filters" id="filters" role="tablist" aria-label="Filtros de atividades">
+            <button class="filter-btn active" data-filter="todas" role="tab" aria-selected="true">Todas</button>
+            <button class="filter-btn" data-filter="tarefa" role="tab" aria-selected="false">Tarefas</button>
+            <button class="filter-btn" data-filter="prova" role="tab" aria-selected="false">Provas</button>
+            <button class="filter-btn" data-filter="trabalho" role="tab" aria-selected="false">Trabalhos</button>
+            <button class="filter-btn" data-filter="pendente" role="tab" aria-selected="false">Pendentes</button>
+            <button class="filter-btn" data-filter="concluida" role="tab" aria-selected="false">Concluídas</button>
+          </div>
+
+          <div class="activity-list" id="activityList"></div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN: CRONOGRAMA ============ -->
+      <section class="screen" id="screen-cronograma" role="tabpanel" aria-labelledby="nav-cronograma">
+        <div class="screen__inner">
+          <div class="screen__header">
+            <div>
+              <h1 id="nav-cronograma">Meu Cronograma</h1>
+              <p class="screen__subtitle">Informe sua disponibilidade e gere seu plano de estudos</p>
+            </div>
+            <button class="btn btn--primary" id="btnGerarCronograma">
+              <span aria-hidden="true">⚡</span> Gerar meu cronograma
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <h2>Disponibilidade semanal</h2>
+              <span class="card__hint">Quanto tempo você tem para estudar a cada dia?</span>
+            </div>
+            <div class="card__body">
+              <div class="availability-grid" id="availabilityGrid"></div>
+            </div>
+          </div>
+
+          <div id="cronogramaWarning" class="alert alert--warning" hidden></div>
+
+          <div id="cronogramaContent"></div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN: PROGRESSO ============ -->
+      <section class="screen" id="screen-progresso" role="tabpanel" aria-labelledby="nav-progresso">
+        <div class="screen__inner">
+          <div class="screen__header">
+            <div>
+              <h1 id="nav-progresso">Progresso</h1>
+              <p class="screen__subtitle" id="progressoMensagem">Seu progresso esta semana</p>
+            </div>
+          </div>
+
+          <div class="progress-overview" id="progressOverview"></div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card__header"><h2>Progresso por matéria</h2></div>
+              <div class="card__body" id="progressBySubject"></div>
+            </div>
+            <div class="card">
+              <div class="card__header"><h2>Sequência de estudos</h2></div>
+              <div class="card__body" id="streakCard"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ BOTTOM NAV (mobile) ============ -->
+    <nav class="bottomnav" aria-label="Navegação inferior">
+      <button class="bottomnav__item active" data-screen="inicio" aria-label="Início" aria-current="page">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        <span>Início</span>
+      </button>
+      <button class="bottomnav__item" data-screen="atividades" aria-label="Atividades">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Atividades</span>
+      </button>
+      <button class="bottomnav__item" data-screen="cronograma" aria-label="Cronograma">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Cronograma</span>
+      </button>
+      <button class="bottomnav__item" data-screen="progresso" aria-label="Progresso">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <span>Progresso</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ============ MODAL: NOVA ATIVIDADE ============ -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__header">
+        <h2 id="modalTitle">Nova atividade</h2>
+        <button class="modal__close" id="btnCloseModal" aria-label="Fechar formulário">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="activityForm" novalidate>
+        <div class="form-group">
+          <label for="fTitulo">Título <span class="req">*</span></label>
+          <input type="text" id="fTitulo" name="titulo" maxlength="80" required autocomplete="off">
+          <span class="form-error" id="errTitulo"></span>
+        </div>
+        <div class="form-group">
+          <label for="fMateria">Matéria <span class="req">*</span></label>
+          <input type="text" id="fMateria" name="materia" maxlength="40" required autocomplete="off" list="materiaList">
+          <datalist id="materiaList"></datalist>
+          <span class="form-error" id="errMateria"></span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fTipo">Tipo <span class="req">*</span></label>
+            <select id="fTipo" name="tipo" required>
+              <option value="">Selecione…</option>
+              <option value="tarefa">Tarefa</option>
+              <option value="prova">Prova</option>
+              <option value="trabalho">Trabalho</option>
+            </select>
+            <span class="form-error" id="errTipo"></span>
+          </div>
+          <div class="form-group">
+            <label for="fPrazo">Data / Prazo <span class="req">*</span></label>
+            <input type="date" id="fPrazo" name="prazo" required>
+            <span class="form-error" id="errPrazo"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fPrioridade">Prioridade <span class="req">*</span></label>
+            <select id="fPrioridade" name="prioridade" required>
+              <option value="">Selecione…</option>
+              <option value="baixa">Baixa</option>
+              <option value="media">Média</option>
+              <option value="alta">Alta</option>
+            </select>
+            <span class="form-error" id="errPrioridade"></span>
+          </div>
+          <div class="form-group">
+            <label for="fDificuldade">Dificuldade <span class="req">*</span></label>
+            <select id="fDificuldade" name="dificuldade" required>
+              <option value="">Selecione…</option>
+              <option value="facil">Fácil</option>
+              <option value="media">Média</option>
+              <option value="dificil">Difícil</option>
+            </select>
+            <span class="form-error" id="errDificuldade"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fTempo">Tempo estimado (minutos) <span class="req">*</span></label>
+          <input type="number" id="fTempo" name="tempoEstimado" min="5" max="600" step="5" required>
+          <span class="form-error" id="errTempo"></span>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="btnCancelForm">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Salvar atividade</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: DETALHES ============ -->
+  <div class="modal-overlay" id="detailOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <div class="modal__header">
+        <h2 id="detailTitle">Detalhes da atividade</h2>
+        <button class="modal__close" id="btnCloseDetail" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal__body" id="detailBody"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
